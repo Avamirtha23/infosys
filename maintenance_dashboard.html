@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            
+            --color-blue: #2563eb;
+            --color-green: #10b981;
+            --color-amber: #f59e0b;
+            --color-red: #ef4444;
+
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            padding: 32px 40px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+
+        /* ===== SIMPLE CLEAN HEADER ===== */
+        .page-header {
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-header h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ===== GRID LAYOUT ===== */
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--color-blue);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 290px;
+            width: 100%;
+        }
+
+        /* ===== HEALTH DISTRIBUTION BARS ===== */
+        .dist-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .dist-row-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .progress-fill.excellent { background: #10b981; }
+        .progress-fill.good { background: #2563eb; }
+        .progress-fill.warning { background: #f59e0b; }
+        .progress-fill.critical { background: #ef4444; }
+
+        /* ===== EQUIPMENT TABLE (5 DEVICES: AC & LIGHT) ===== */
+        .section-full {
+            margin-bottom: 28px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .equipment-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 8px;
+        }
+
+        .equipment-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .equipment-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        .equipment-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .device-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .device-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .device-icon.ac { background: #eff6ff; color: #2563eb; }
+        .device-icon.light { background: #fffbeb; color: #d97706; }
+
+        .score-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .score-pill.excellent { background: #ecfdf5; color: #059669; }
+        .score-pill.good { background: #eff6ff; color: #1d4ed8; }
+        .score-pill.warning { background: #fffbeb; color: #d97706; }
+        .score-pill.critical { background: #fef2f2; color: #dc2626; }
+
+        .risk-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .risk-tag.low { background: #f0fdf4; color: #15803d; }
+        .risk-tag.medium { background: #fefce8; color: #a16207; }
+        .risk-tag.high { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+        /* ===== MAINTENANCE ALERTS ===== */
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 8px;
+        }
+
+        .alert-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .alert-card.critical {
+            border-left: 4px solid var(--color-red);
+        }
+
+        .alert-card.warning {
+            border-left: 4px solid var(--color-amber);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .alert-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .alert-desc {
+            font-size: 0.82rem;
+            color: #475569;
+            margin-bottom: 12px;
+            line-height: 1.45;
+        }
+
+        .alert-action-box {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.78rem;
+            color: #1e293b;
+            border-left: 3px solid var(--color-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 950px) {
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+            .alerts-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- 1. CLEAN HEADING -->
+        <header class="page-header">
+            <h1>Predictive Maintenance Dashboard</h1>
+            <p>Equipment Health Scoring & Condition Monitoring</p>
+        </header>
+
+        <!-- 2. TOP GRID: HEALTH CONDITION CHART & HEALTH DISTRIBUTION -->
+        <div class="top-grid">
+
+            <!-- Chart: Health Condition Comparison of Key Components -->
+            <div class="card">
+                <div class="card-header-row">
+                    <div class="card-title">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Component Health Condition Trend
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Sample Devices</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="componentHealthChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Equipment Health Distribution -->
+            <div class="card">
+                <div class="card-header-row">
+                    <div class="card-title">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        Equipment Health Distribution
+                    </div>
+                </div>
+
+                <div class="dist-list">
+                    <div>
+                        <div class="dist-row-header">
+                            <span>Excellent (80–100)</span>
+                            <span style="color: #10b981; font-weight: 700;">60%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill excellent" style="width: 60%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="dist-row-header">
+                            <span>Good (60–79)</span>
+                            <span style="color: #2563eb; font-weight: 700;">20%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill good" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="dist-row-header">
+                            <span>Warning (40–59)</span>
+                            <span style="color: #f59e0b; font-weight: 700;">10%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill warning" style="width: 10%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="dist-row-header">
+                            <span>Critical (0–39)</span>
+                            <span style="color: #ef4444; font-weight: 700;">10%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill critical" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 3. EQUIPMENT CONDITION TABLE (5 DEVICES: BOTH AC & LIGHTING) -->
+        <div class="card section-full">
+            <div class="card-header-row">
+                <div class="card-title">
+                    <i class="fa-solid fa-list-check"></i>
+                    Equipment Condition & Health Scores
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">5 Monitored Devices</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="equipment-table">
+                    <thead>
+                        <tr>
+                            <th>Equipment Name</th>
+                            <th>Type</th>
+                            <th>Current Power</th>
+                            <th>Health Score</th>
+                            <th>Condition</th>
+                            <th>Failure Risk</th>
+                            <th>Recommended Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 1. Zone 1 AC1 -->
+                        <tr>
+                            <td>
+                                <div class="device-badge">
+                                    <div class="device-icon ac"><i class="fa-solid fa-snowflake"></i></div>
+                                    <strong>Zone 1 - AC Unit 1</strong>
+                                </div>
+                            </td>
+                            <td>AC / HVAC</td>
+                            <td>6.85 kW</td>
+                            <td>
+                                <span class="score-pill warning">
+                                    <i class="fa-solid fa-heart-pulse"></i> 53%
+                                </span>
+                            </td>
+                            <td><strong style="color: #d97706;">Warning</strong></td>
+                            <td><span class="risk-tag medium">Medium Risk</span></td>
+                            <td>Perform preventive maintenance & check compressor load.</td>
+                        </tr>
+
+                        <!-- 2. Zone 2 Light -->
+                        <tr>
+                            <td>
+                                <div class="device-badge">
+                                    <div class="device-icon light"><i class="fa-solid fa-lightbulb"></i></div>
+                                    <strong>Zone 2 - Lighting Grid</strong>
+                                </div>
+                            </td>
+                            <td>Lighting</td>
+                            <td>4.12 kW</td>
+                            <td>
+                                <span class="score-pill excellent">
+                                    <i class="fa-solid fa-heart-pulse"></i> 88%
+                                </span>
+                            </td>
+                            <td><strong style="color: #059669;">Excellent</strong></td>
+                            <td><span class="risk-tag low">Low Risk</span></td>
+                            <td>Continue normal monitoring. Operational parameters optimal.</td>
+                        </tr>
+
+                        <!-- 3. Zone 2 AC13 -->
+                        <tr>
+                            <td>
+                                <div class="device-badge">
+                                    <div class="device-icon ac"><i class="fa-solid fa-snowflake"></i></div>
+                                    <strong>Zone 2 - AC Unit 13</strong>
+                                </div>
+                            </td>
+                            <td>AC / HVAC</td>
+                            <td>0.18 kW</td>
+                            <td>
+                                <span class="score-pill critical">
+                                    <i class="fa-solid fa-heart-pulse"></i> 35%
+                                </span>
+                            </td>
+                            <td><strong style="color: #dc2626;">Critical</strong></td>
+                            <td><span class="risk-tag high">High Risk</span></td>
+                            <td>Immediate maintenance required. Inspect electrical components.</td>
+                        </tr>
+
+                        <!-- 4. Zone 3 Light -->
+                        <tr>
+                            <td>
+                                <div class="device-badge">
+                                    <div class="device-icon light"><i class="fa-solid fa-lightbulb"></i></div>
+                                    <strong>Zone 3 - Lighting Grid</strong>
+                                </div>
+                            </td>
+                            <td>Lighting</td>
+                            <td>2.45 kW</td>
+                            <td>
+                                <span class="score-pill good">
+                                    <i class="fa-solid fa-heart-pulse"></i> 72%
+                                </span>
+                            </td>
+                            <td><strong style="color: #2563eb;">Good</strong></td>
+                            <td><span class="risk-tag low">Low Risk</span></td>
+                            <td>Schedule regular luminaire ballast & timer inspection.</td>
+                        </tr>
+
+                        <!-- 5. Zone 4 AC1 -->
+                        <tr>
+                            <td>
+                                <div class="device-badge">
+                                    <div class="device-icon ac"><i class="fa-solid fa-snowflake"></i></div>
+                                    <strong>Zone 4 - AC Unit 1</strong>
+                                </div>
+                            </td>
+                            <td>AC / HVAC</td>
+                            <td>1.82 kW</td>
+                            <td>
+                                <span class="score-pill warning">
+                                    <i class="fa-solid fa-heart-pulse"></i> 51%
+                                </span>
+                            </td>
+                            <td><strong style="color: #d97706;">Warning</strong></td>
+                            <td><span class="risk-tag medium">Medium Risk</span></td>
+                            <td>Check air filter resistance & motor drive bearings.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. MAINTENANCE ALERTS -->
+        <div class="card section-full">
+            <div class="card-header-row">
+                <div class="card-title">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                    Maintenance Alerts
+                </div>
+            </div>
+
+            <div class="alerts-grid">
+                <!-- Alert 1 -->
+                <div class="alert-card critical">
+                    <div class="alert-header">
+                        <div class="alert-name"><i class="fa-solid fa-snowflake" style="color: #2563eb;"></i> Zone 2 - AC Unit 13</div>
+                        <span class="risk-tag high">High Risk</span>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span class="score-pill critical"><i class="fa-solid fa-heart-pulse"></i> Health Score: 35%</span>
+                    </div>
+                    <div class="alert-desc">
+                        <strong>Problem:</strong> Severe power fluctuations and repeated anomalies detected.
+                    </div>
+                    <div class="alert-action-box">
+                        <strong>Recommended Maintenance:</strong> Immediate inspection of compressor and electrical wiring.
+                    </div>
+                </div>
+
+                <!-- Alert 2 -->
+                <div class="alert-card warning">
+                    <div class="alert-header">
+                        <div class="alert-name"><i class="fa-solid fa-snowflake" style="color: #2563eb;"></i> Zone 1 - AC Unit 1</div>
+                        <span class="risk-tag medium">Medium Risk</span>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span class="score-pill warning"><i class="fa-solid fa-heart-pulse"></i> Health Score: 53%</span>
+                    </div>
+                    <div class="alert-desc">
+                        <strong>Problem:</strong> Continuous high power draw exceeding normal baseline.
+                    </div>
+                    <div class="alert-action-box">
+                        <strong>Recommended Maintenance:</strong> Perform preventive maintenance & calibrate thermostat.
+                    </div>
+                </div>
+
+                <!-- Alert 3 -->
+                <div class="alert-card warning">
+                    <div class="alert-header">
+                        <div class="alert-name"><i class="fa-solid fa-snowflake" style="color: #2563eb;"></i> Zone 4 - AC Unit 1</div>
+                        <span class="risk-tag medium">Medium Risk</span>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span class="score-pill warning"><i class="fa-solid fa-heart-pulse"></i> Health Score: 51%</span>
+                    </div>
+                    <div class="alert-desc">
+                        <strong>Problem:</strong> Intermittent load oscillations during peak hours.
+                    </div>
+                    <div class="alert-action-box">
+                        <strong>Recommended Maintenance:</strong> Check air filter and lubricate motor bearings.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT FOR COMPONENT HEALTH CHART -->
+    <script>
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // Multi-line chart comparing health condition trend of 3 key sample components
+        const ctx = document.getElementById('componentHealthChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [
+                    {
+                        label: 'Zone 2 - Lighting Grid (Excellent)',
+                        data: [92, 90, 89, 88, 88, 88],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Zone 1 - AC Unit 1 (Warning)',
+                        data: [75, 70, 64, 58, 55, 53],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Zone 2 - AC Unit 13 (Critical)',
+                        data: [68, 58, 49, 42, 38, 35],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 14,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.dataset.label.split(' (')[0]}: ${context.raw}% Health Score`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Health Score (0-100)',
+                            font: { size: 11 }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

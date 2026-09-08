@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Facility Opt AI Platform</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --color-primary: #2563eb;
+            --color-primary-light: #eff6ff;
+            --color-hvac: #2563eb;
+            --color-lighting: #f59e0b;
+            --color-plug: #10b981;
+            --color-danger: #ef4444;
+            --sidebar-width: 240px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--color-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .brand-text h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            font-size: 0.72rem;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .menu-heading {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            font-weight: 700;
+            padding: 8px 12px 4px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu li a:hover,
+        .sidebar-menu li.active a {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .sidebar-menu li.active a i,
+        .sidebar-menu li a:hover i {
+            color: #60a5fa;
+        }
+
+        /* ===== MAIN WRAPPER ===== */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 32px 40px;
+            max-width: 1400px;
+        }
+
+        /* ===== HEADER TITLE ===== */
+        .page-header {
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .page-header h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        /* ===== SECTION GENERAL ===== */
+        .content-section {
+            margin-bottom: 36px;
+            scroll-margin-top: 24px;
+        }
+
+        .section-heading {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== METRIC CARDS (TOTAL ENERGY, HVAC, LIGHTING, PLUG) ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .card-icon.total { background: #eff6ff; color: #2563eb; }
+        .card-icon.hvac { background: #f0fdf4; color: #16a34a; }
+        .card-icon.lighting { background: #fffbeb; color: #d97706; }
+        .card-icon.plug { background: #f5f3ff; color: #7c3aed; }
+
+        .card-tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .card-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .card-value {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .card-value span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .card-footer {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            border-top: 1px solid #f1f5f9;
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-percentage {
+            font-weight: 700;
+        }
+        .card-percentage.hvac { color: #16a34a; }
+        .card-percentage.lighting { color: #d97706; }
+        .card-percentage.plug { color: #7c3aed; }
+
+        /* ===== CHARTS SECTION ===== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 1.3fr;
+            gap: 24px;
+        }
+
+        .chart-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* ===== ANOMALY DETECTION SECTION ===== */
+        .anomaly-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .anomaly-summary-card {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid var(--color-danger);
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .anomaly-icon {
+            color: var(--color-danger);
+            font-size: 1.25rem;
+            margin-top: 2px;
+        }
+
+        .anomaly-summary-text h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 4px;
+        }
+
+        .anomaly-summary-text p {
+            font-size: 0.84rem;
+            color: #7f1d1d;
+            line-height: 1.4;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86rem;
+            margin-top: 12px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 14px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        .badge-pill.danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .badge-pill.success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-pill.neutral {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* ===== RECOMMENDATIONS SECTION ===== */
+        .recommendations-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .rec-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .rec-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .rec-card-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .rec-card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .rec-card-icon.hvac { background: #eff6ff; color: #2563eb; }
+        .rec-card-icon.anomaly { background: #fef2f2; color: #ef4444; }
+        .rec-card-icon.lighting { background: #fffbeb; color: #d97706; }
+
+        .rec-card-top h5 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .rec-card p {
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .rec-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar-brand .brand-text,
+            .sidebar-menu li a span,
+            .menu-heading {
+                display: none;
+            }
+            .sidebar-menu li a {
+                justify-content: center;
+                padding: 12px;
+            }
+            .main-wrapper {
+                margin-left: 70px;
+                padding: 20px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR WITH SMOOTH SCROLL TO BELOW SECTIONS -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="brand-text">
+                <h3>Smart Facility</h3>
+                <span>Opt AI Platform</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-heading">Navigation</li>
+            <li class="active">
+                <a href="#overview">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span>Overview</span>
+                </a>
+            </li>
+            <li>
+                <a href="#metrics">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Energy Summary</span>
+                </a>
+            </li>
+            <li>
+                <a href="#charts">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Consumption Charts</span>
+                </a>
+            </li>
+            <li>
+                <a href="#anomalies">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Anomaly Detection</span>
+                </a>
+            </li>
+            <li>
+                <a href="#recommendations">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+            </li>
+            <li class="menu-heading">Milestone 2</li>
+            <li>
+                <a href="maintenance_dashboard.html" style="background: rgba(37, 99, 235, 0.15); color: #60a5fa;">
+                    <i class="fa-solid fa-wrench" style="color: #60a5fa;"></i>
+                    <span>Maintenance Module</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-wrapper" id="overview">
+
+        <!-- 1. PAGE TITLE -->
+        <header class="page-header">
+            <div>
+                <h1>Smart Facility Opt AI Platform</h1>
+                <p>Energy Monitoring & Optimization Telemetry (CU-BEMS 2019 Floor 2)</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="maintenance_dashboard.html" class="status-badge" style="text-decoration: none; background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">
+                    <i class="fa-solid fa-wrench"></i> Predictive Maintenance
+                </a>
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    System Active
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. TOTAL ENERGY, HVAC, LIGHTING, PLUG LOAD -->
+        <section class="content-section" id="metrics">
+            <div class="section-heading">
+                <i class="fa-solid fa-bolt" style="color: var(--color-primary);"></i>
+                Energy Overview
+            </div>
+
+            <div class="cards-grid">
+                <!-- Total Energy -->
+                <div class="card">
+                    <div class="card-header-row">
+                        <div class="card-icon total"><i class="fa-solid fa-bolt"></i></div>
+                        <span class="card-tag">Overall</span>
+                    </div>
+                    <div class="card-title">Total Energy</div>
+                    <div class="card-value">15,348,082.99 <span>kW</span></div>
+                    <div class="card-footer">
+                        <span>Cumulative consumption</span>
+                        <span class="card-percentage" style="color: #2563eb;">100%</span>
+                    </div>
+                </div>
+
+                <!-- HVAC Subsystem -->
+                <div class="card">
+                    <div class="card-header-row">
+                        <div class="card-icon hvac"><i class="fa-solid fa-snowflake"></i></div>
+                        <span class="card-tag">Primary</span>
+                    </div>
+                    <div class="card-title">HVAC Subsystem</div>
+                    <div class="card-value">12,252,991.43 <span>kW</span></div>
+                    <div class="card-footer">
+                        <span>Cooling & Ventilation</span>
+                        <span class="card-percentage hvac">79.83%</span>
+                    </div>
+                </div>
+
+                <!-- Lighting Grid -->
+                <div class="card">
+                    <div class="card-header-row">
+                        <div class="card-icon lighting"><i class="fa-solid fa-lightbulb"></i></div>
+                        <span class="card-tag">Secondary</span>
+                    </div>
+                    <div class="card-title">Lighting Grid</div>
+                    <div class="card-value">2,243,343.21 <span>kW</span></div>
+                    <div class="card-footer">
+                        <span>Lighting circuits</span>
+                        <span class="card-percentage lighting">14.62%</span>
+                    </div>
+                </div>
+
+                <!-- Plug Load -->
+                <div class="card">
+                    <div class="card-header-row">
+                        <div class="card-icon plug"><i class="fa-solid fa-plug"></i></div>
+                        <span class="card-tag">Auxiliary</span>
+                    </div>
+                    <div class="card-title">Plug Load</div>
+                    <div class="card-value">851,748.35 <span>kW</span></div>
+                    <div class="card-footer">
+                        <span>Outlets & devices</span>
+                        <span class="card-percentage plug">5.55%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TWO CHARTS -->
+        <section class="content-section" id="charts">
+            <div class="section-heading">
+                <i class="fa-solid fa-chart-column" style="color: var(--color-primary);"></i>
+                Energy Consumption Charts
+            </div>
+
+            <div class="charts-grid">
+                <!-- Bar Chart: Subsystem Consumption -->
+                <div class="chart-box">
+                    <div class="chart-title">Energy Consumption by Subsystem</div>
+                    <div class="chart-subtitle">Comparison of total kilowatt readings across subsystems</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="energyBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart: Distribution -->
+                <div class="chart-box">
+                    <div class="chart-title">Energy Source Distribution</div>
+                    <div class="chart-subtitle">Proportional breakdown of total building power share</div>
+                    <div class="chart-canvas-wrapper">
+                        <canvas id="energyDonutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ANOMALY DETECTION -->
+        <section class="content-section" id="anomalies">
+            <div class="section-heading">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                Anomaly Detection
+            </div>
+
+            <div class="anomaly-box">
+                <div class="anomaly-summary-card">
+                    <div class="anomaly-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="anomaly-summary-text">
+                        <h4>26,231 Anomalies Detected (4.99%)</h4>
+                        <p>Anomaly detection flagged 26,231 unusual readings out of 525,600 total records that deviated from expected baseline patterns.</p>
+                    </div>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Telemetry Metric</th>
+                            <th>Total Readings</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Normal Energy Readings</strong></td>
+                            <td>499,369</td>
+                            <td>95.01%</td>
+                            <td><span class="badge-pill success">Normal</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Anomalous Readings</strong></td>
+                            <td>26,231</td>
+                            <td>4.99%</td>
+                            <td><span class="badge-pill danger">Anomaly Flagged</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Monitored Dataset</strong></td>
+                            <td>525,600</td>
+                            <td>100.00%</td>
+                            <td><span class="badge-pill neutral">CU-BEMS 2019</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 5. RECOMMENDATIONS -->
+        <section class="content-section" id="recommendations">
+            <div class="section-heading">
+                <i class="fa-solid fa-lightbulb" style="color: #f59e0b;"></i>
+                Energy Recommendations
+            </div>
+
+            <div class="recommendations-box">
+                <div class="rec-grid">
+                    <div class="rec-card">
+                        <div class="rec-card-top">
+                            <div class="rec-card-icon hvac">
+                                <i class="fa-solid fa-snowflake"></i>
+                            </div>
+                            <h5>HVAC Optimization</h5>
+                        </div>
+                        <p>HVAC consumption is high (79.83% of total). Optimize HVAC temperature setpoints and operating schedules during unoccupied hours.</p>
+                    </div>
+
+                    <div class="rec-card">
+                        <div class="rec-card-top">
+                            <div class="rec-card-icon anomaly">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h5>Anomaly Monitoring</h5>
+                        </div>
+                        <p>Monitor repeated energy anomalies to identify possible equipment faults, operational issues, or unexpected peak surges.</p>
+                    </div>
+
+                    <div class="rec-card">
+                        <div class="rec-card-top">
+                            <div class="rec-card-icon lighting">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <h5>Lighting & Plug Load</h5>
+                        </div>
+                        <p>Check lighting and plug-load usage during low-demand periods to eliminate idle baseload consumption.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Active link highlighting on scroll
+        const sections = document.querySelectorAll('section, header');
+        const navLinks = document.querySelectorAll('.sidebar-menu li');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 120) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(li => {
+                li.classList.remove('active');
+                const href = li.querySelector('a').getAttribute('href').replace('#', '');
+                if (href === current) {
+                    li.classList.add('active');
+                }
+            });
+        });
+
+        // Set global Chart.js defaults for clean light theme
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        // 1. Bar Chart
+        const barCtx = document.getElementById('energyBarChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['HVAC', 'Lighting', 'Plug Load'],
+                datasets: [{
+                    label: 'Energy Consumption (kW)',
+                    data: [12252991.43, 2243343.21, 851748.35],
+                    backgroundColor: ['#2563eb', '#f59e0b', '#10b981'],
+                    borderRadius: 6,
+                    barPercentage: 0.55
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 10,
+                        callbacks: {
+                            label: function (context) {
+                                return context.raw.toLocaleString() + ' kW';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: {
+                            callback: function (value) {
+                                return (value / 1000000).toFixed(1) + 'M kW';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 2. Donut Chart
+        const donutCtx = document.getElementById('energyDonutChart').getContext('2d');
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['HVAC (79.83%)', 'Lighting (14.62%)', 'Plug Load (5.55%)'],
+                datasets: [{
+                    data: [12252991.43, 2243343.21, 851748.35],
+                    backgroundColor: ['#2563eb', '#f59e0b', '#10b981'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 16,
+                            usePointStyle: true,
+                            boxWidth: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 10,
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + context.label + ': ' + context.raw.toLocaleString() + ' kW';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

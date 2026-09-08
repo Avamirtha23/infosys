@@ -1,0 +1,5 @@
+ENERGY EFFICIENCY RECOMMENDATIONS
+==================================================
+
+- HVAC consumption is high. Optimize HVAC temperature settings and operating schedules.
+- Monitor repeated energy anomalies to identify possible equipment or operational issues.

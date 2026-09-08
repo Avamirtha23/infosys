@@ -1,0 +1,21 @@
+AGENTIC FACILITYOPS
+ENERGY AGENT REPORT
+==================================================
+
+Dataset: CU-BEMS 2019 Floor 2
+Total Readings: 525600
+Normal Readings: 499369
+Anomalies Detected: 26231
+Anomaly Percentage: 4.99%
+
+ENERGY SUMMARY
+------------------------------
+Total HVAC: 12252991.43
+Total Lighting: 2243343.21
+Total Plug: 851748.35
+Total Energy: 15348082.99
+
+RECOMMENDATIONS
+------------------------------
+- HVAC consumption is high. Optimize HVAC temperature settings and operating schedules.
+- Monitor repeated energy anomalies to identify possible equipment or operational issues.
