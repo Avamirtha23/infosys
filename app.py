@@ -12,7 +12,6 @@ Then open http://localhost:5000
 """
 import os
 import sqlite3
-from functools import wraps
 
 from flask import Flask, jsonify, render_template, g, request, session, redirect, url_for
 
@@ -30,47 +29,12 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FACILITYOPS_SECRET_KEY", "dev-secret-change-me")
 
 # Demo credentials — override with env vars for anything beyond local/demo use.
-APP_USERNAME = os.environ.get("FACILITYOPS_USERNAME", "admin")
-APP_PASSWORD = os.environ.get("FACILITYOPS_PASSWORD", "admin123")
-
-
-def login_required(view):
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("login", next=request.path))
-        return view(*args, **kwargs)
-    return wrapped
-
-
-@app.before_request
-def require_login():
-    exempt = {"login", "static"}
-    if request.endpoint in exempt or request.endpoint is None:
-        return
-    if not session.get("logged_in"):
-        return redirect(url_for("login", next=request.path))
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    error = None
-    if request.method == "POST":
-        username = request.form.get("username", "")
-        password = request.form.get("password", "")
-        if username == APP_USERNAME and password == APP_PASSWORD:
-            session["logged_in"] = True
-            session["username"] = username
-            next_url = request.args.get("next") or url_for("index")
-            return redirect(next_url)
-        error = "Invalid username or password."
-    return render_template("login.html", error=error)
 
 
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect(url_for("index"))
 
 
 def get_db():
@@ -89,8 +53,13 @@ def close_db(exception=None):
 
 def ensure_db_exists():
     if not os.path.exists(DB_PATH):
-        from database.seed_data import main as seed_main
-        seed_main()
+        dataset_dir = os.path.join(BASE_DIR, 'dataset')
+        if os.path.exists(dataset_dir):
+            from database.ingest_dataset import run as ingest_main
+            ingest_main()
+        else:
+            from database.seed_data import main as seed_main
+            seed_main()
 
     # Milestone 4: (re)load the Cost Optimization dataset every startup so
     # the `cost_optimization` table always matches the CSV on disk, even if

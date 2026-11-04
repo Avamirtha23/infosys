@@ -1,10 +1,16 @@
-const facilitySelect = document.getElementById('facilitySelect');
-const monthsSelect = document.getElementById('monthsSelect');
+const facilitySelect = document.getElementById('facilitySelect') || { value: '', addEventListener: () => {} };
+const monthsSelect = document.getElementById('monthsSelect') || { value: '12', addEventListener: () => {} };
 let trendChart, breakdownChart, rankingChart, complianceChart;
 
-const CHART_TEXT = '#7A8494';
-const CHART_GRID = 'rgba(20,30,45,0.06)';
-const BREAKDOWN_COLORS = ['#2E86C1', '#1F9D6B', '#D9720C', '#D64545', '#8E44AD', '#16A085', '#F1C40F', '#7A8494'];
+function getThemeColors() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    text: isLight ? '#64748B' : '#94A3B8',
+    grid: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+  };
+}
+
+const BREAKDOWN_COLORS = ['#00A3FF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EAB308', '#64748B'];
 
 function chartJsReady() {
   return typeof Chart !== 'undefined' && !window.__chartJsUnavailable;
@@ -41,22 +47,23 @@ async function loadTrend() {
   const ctx = document.getElementById('trendChart');
   if (!chartJsReady()) return;
   if (trendChart) trendChart.destroy();
+  const colors = getThemeColors();
   trendChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: d.labels || [],
       datasets: [
-        { label: 'Operational Cost', data: d.operational_cost || [], borderColor: '#D9720C', backgroundColor: 'rgba(217,114,12,0.08)', tension: 0.3, fill: true },
-        { label: 'Budget Allocated', data: d.budget_allocated || [], borderColor: '#2E86C1', backgroundColor: 'rgba(46,134,193,0.06)', tension: 0.3, fill: true },
+        { label: 'Operational Spend', data: d.operational_cost || [], borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.12)', tension: 0.3, fill: true },
+        { label: 'Allocated Budget', data: d.budget_allocated || [], borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.06)', tension: 0.3, fill: true },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { display: false } },
-        y: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
+        y: { ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
       },
     },
   });
@@ -75,6 +82,7 @@ async function loadBreakdown() {
   const ctx = document.getElementById('breakdownChart');
   if (!chartJsReady() || !entries.length) return;
   if (breakdownChart) breakdownChart.destroy();
+  const colors = getThemeColors();
   breakdownChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -89,7 +97,7 @@ async function loadBreakdown() {
       cutout: '58%',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 10.5 }, boxWidth: 10 } } },
+      plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 10.5, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } } },
     },
   });
 }
@@ -104,17 +112,18 @@ async function loadRanking() {
   }
   body.innerHTML = d.map(r => `
     <tr>
-      <td>${r.facility_id}</td>
-      <td>${r.facility_type}</td>
-      <td>${fmtMoney(r.potential_savings)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--accent);">${r.facility_id}</td>
+      <td><span class="f-type">${r.facility_type}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace; font-weight:600;">₹${fmtMoney(r.potential_savings)}</td>
       <td><span class="badge ${r.over_budget ? 'High' : 'Low'}">${fmtMoney(r.cost_variance)}</span></td>
-      <td>${r.avg_roi_pct}%</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${r.avg_roi_pct}%</td>
     </tr>`).join('');
 
   const top8 = d.slice(0, 8);
   const ctx = document.getElementById('rankingChart');
   if (!chartJsReady() || !top8.length) return;
   if (rankingChart) rankingChart.destroy();
+  const colors = getThemeColors();
   rankingChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -122,8 +131,8 @@ async function loadRanking() {
       datasets: [{
         label: 'Potential Savings',
         data: top8.map(r => r.potential_savings),
-        backgroundColor: top8.map(r => r.over_budget ? '#D64545' : '#D9720C'),
-        borderRadius: 4,
+        backgroundColor: top8.map(r => r.over_budget ? '#EF4444' : '#00A3FF'),
+        borderRadius: 3,
       }],
     },
     options: {
@@ -132,8 +141,8 @@ async function loadRanking() {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 9.5 }, callback: v => fmtMoney(v) }, grid: { color: CHART_GRID } },
-        y: { ticks: { color: CHART_TEXT, font: { size: 10.5 } }, grid: { display: false } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" }, callback: v => fmtMoney(v) }, grid: { color: colors.grid } },
+        y: { ticks: { color: colors.text, font: { size: 10.5, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
       },
     },
   });
@@ -147,10 +156,10 @@ async function loadVendor() {
     return;
   }
   document.getElementById('vendorPanel').innerHTML = `
-    <div class="bar-row"><div class="bar-label"><span>Total Vendor Spend</span><span>${fmtMoney(d.total_vendor_cost)}</span></div></div>
-    <div class="bar-row"><div class="bar-label"><span>Avg Active Vendors / Period</span><span>${d.avg_active_vendors}</span></div></div>
-    <div class="bar-row"><div class="bar-label"><span>Avg Cost per Vendor</span><span>${fmtMoney(d.avg_cost_per_vendor)}</span></div></div>
-    <div class="bar-row"><div class="bar-label"><span>Consolidation Opportunities</span><span>${d.consolidation_opportunities}</span></div></div>
+    <div class="bar-row"><div class="bar-label"><span>Total Contractor Spend</span><span>₹${fmtMoney(d.total_vendor_cost)}</span></div></div>
+    <div class="bar-row"><div class="bar-label"><span>Active Maintenance Vendors</span><span>${d.avg_active_vendors}</span></div></div>
+    <div class="bar-row"><div class="bar-label"><span>Average Cost per Contractor</span><span>₹${fmtMoney(d.avg_cost_per_vendor)}</span></div></div>
+    <div class="bar-row"><div class="bar-label"><span>Consolidation Opportunities Identified</span><span>${d.consolidation_opportunities}</span></div></div>
   `;
 }
 
@@ -158,28 +167,18 @@ async function loadBudgetCompliance() {
   const res = await fetch(`/api/cost/budget-compliance?${qs()}`);
   const d = await res.json();
   document.getElementById('complianceTag').textContent = `${d.compliance_pct ?? 0}% COMPLIANT`;
-  const body = document.getElementById('varianceTable');
-  if (!d.worst_variance_periods || !d.worst_variance_periods.length) {
-    body.innerHTML = '<tr><td colspan="3" class="loading-note">No over-budget periods found.</td></tr>';
-  } else {
-    body.innerHTML = d.worst_variance_periods.map(v => `
-      <tr>
-        <td>${v.facility_id}</td>
-        <td>${v.month}</td>
-        <td><span class="badge ${v.variance < 0 ? 'Critical' : 'Low'}">${fmtMoney(v.variance)}</span></td>
-      </tr>`).join('');
-  }
 
   const ctx = document.getElementById('complianceChart');
   if (!chartJsReady() || d.periods_within_budget === undefined) return;
   if (complianceChart) complianceChart.destroy();
+  const colors = getThemeColors();
   complianceChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: ['Within Budget', 'Over Budget'],
       datasets: [{
         data: [d.periods_within_budget ?? 0, d.periods_over_budget ?? 0],
-        backgroundColor: ['#1F9D6B', '#D64545'],
+        backgroundColor: ['#10B981', '#EF4444'],
         borderWidth: 0,
       }],
     },
@@ -187,7 +186,7 @@ async function loadBudgetCompliance() {
       cutout: '62%',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 11 }, boxWidth: 10 } } },
+      plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } } },
     },
   });
 }
@@ -195,7 +194,6 @@ async function loadBudgetCompliance() {
 async function loadRecommendations() {
   const res = await fetch(`/api/cost/recommendations?${qs()}`);
   const d = await res.json();
-  document.getElementById('recCountTag').textContent = `${d.length} RECOMMENDATIONS`;
   document.getElementById('recommendations').innerHTML = d.map(r => `
     <div class="rec">
       <div class="rec-head">
@@ -203,7 +201,7 @@ async function loadRecommendations() {
         <span class="badge ${r.priority}">${r.priority}</span>
       </div>
       <div class="rec-detail">${r.detail}</div>
-      <div class="rec-savings">Flagged ${r.occurrences}x · Est. savings: ${fmtMoney(r.est_savings)}</div>
+      <div class="rec-savings"><span>Flagged ${r.occurrences}x</span> · <strong>Estimated Savings: ₹${fmtMoney(r.est_savings)}</strong></div>
     </div>`).join('') || '<p class="loading-note">No recommendations for this selection.</p>';
 }
 

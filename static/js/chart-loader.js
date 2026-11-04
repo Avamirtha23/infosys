@@ -1,13 +1,5 @@
 /**
- * Resilient Chart.js loader.
- *
- * Some networks (corporate/school firewalls, certain antivirus products,
- * some ad/asset blockers) block individual CDN domains. If Chart.js fails
- * to load, every canvas on the page silently stays blank while the rest of
- * the dashboard (which doesn't depend on Chart.js) keeps working — which
- * is a confusing failure mode. This loader tries several CDNs in sequence
- * and only starts the page's own chart-drawing script once Chart.js has
- * actually loaded, or shows a visible banner if every source fails.
+ * Resilient Chart.js loader with Industrial Theme Integration.
  */
 (function () {
   var CDN_SOURCES = [
@@ -41,14 +33,36 @@
   function showLoadErrorBanner() {
     var banner = document.createElement('div');
     banner.style.cssText =
-      'background:#FDEDEC;border:1px solid #F5B7B1;color:#943126;' +
-      'padding:12px 18px;border-radius:8px;margin-bottom:20px;font-family:sans-serif;font-size:13.5px;';
+      'background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#EF4444;' +
+      'padding:12px 18px;border-radius:6px;margin-bottom:20px;font-family:"IBM Plex Sans",sans-serif;font-size:13.5px;';
     banner.textContent =
-      'Charts could not load — every chart library source was blocked by this network. ' +
-      'The numbers and tables above are still accurate; only the visual charts are affected. ' +
-      'Try a different network, or open your browser console (F12) for details.';
+      'Charts could not load — chart library source was blocked. ' +
+      'The telemetry numbers and tables above remain live; only graphical visualizers are affected.';
     var main = document.querySelector('main.main');
     if (main) main.insertBefore(banner, main.firstChild);
+  }
+
+  function configureChartDefaults() {
+    if (typeof Chart === 'undefined') return;
+    var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    var textColor = isLight ? '#64748B' : '#94A3B8';
+    var gridColor = isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+    Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+
+    if (Chart.defaults.plugins && Chart.defaults.plugins.tooltip) {
+      Chart.defaults.plugins.tooltip.backgroundColor = isLight ? '#0F172A' : '#141D2D';
+      Chart.defaults.plugins.tooltip.titleColor = '#F1F5F9';
+      Chart.defaults.plugins.tooltip.bodyColor = '#CBD5E1';
+      Chart.defaults.plugins.tooltip.borderColor = isLight ? '#334155' : '#24354D';
+      Chart.defaults.plugins.tooltip.borderWidth = 1;
+      Chart.defaults.plugins.tooltip.padding = 10;
+      Chart.defaults.plugins.tooltip.cornerRadius = 6;
+      Chart.defaults.plugins.tooltip.titleFont = { family: "'IBM Plex Mono', monospace", size: 12, weight: '600' };
+      Chart.defaults.plugins.tooltip.bodyFont = { family: "'IBM Plex Sans', sans-serif", size: 11.5 };
+    }
   }
 
   window.loadDashboardScriptAfterChart = function (dashboardScriptSrc) {
@@ -59,11 +73,7 @@
         showLoadErrorBanner();
       })
       .then(function () {
-        // Always load the dashboard script, whether or not Chart.js loaded —
-        // KPIs, tables, and bar-percentage displays don't depend on it.
-        // The dashboard script checks window.__chartJsUnavailable before
-        // calling into Chart.js so it degrades gracefully instead of
-        // throwing and aborting everything else.
+        configureChartDefaults();
         return loadScript(dashboardScriptSrc);
       });
   };

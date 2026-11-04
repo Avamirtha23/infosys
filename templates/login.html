@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in · Agentic FacilityOps</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <title>Terminal Access · Agentic FacilityOps</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5.0">
+  <script src="{{ url_for('static', filename='js/theme.js') }}?v=5.0"></script>
 </head>
+
 <body class="login-body">
   <div class="login-wrap">
     <div class="login-card">
       <div class="login-brand">
         <div class="mark">FO</div>
-        <h1>Agentic FacilityOps</h1>
-        <p>AI-Powered Building Operations &amp; Facility Intelligence</p>
+        <h1>FacilityOps Terminal</h1>
+        <p>Restricted Diagnostic &amp; CMMS Access Gateway</p>
       </div>
 
       {% if error %}
-      <div class="login-error">{{ error }}</div>
+      <div class="login-error">⚠️ {{ error }}</div>
       {% endif %}
 
       <form class="login-form" method="POST" action="{{ url_for('login') }}">
-        <label for="username">Username</label>
+        <label for="username">Operator Identification</label>
         <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required autofocus>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+        <label for="password">Security Credential</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password"
+          required>
 
-        <button type="submit" class="login-btn">Sign In</button>
+        <button type="submit" class="login-btn">Authorize &amp; Access Console</button>
       </form>
 
       <div class="login-footer">
         <span class="status-dot"></span>
-        6 agents live · Energy · Maintenance · Occupancy · Security · Cost · Executive
+        CMMS Gateway · 6 Autonomous Agent Subsystems Online
       </div>
     </div>
   </div>
 </body>
+
 </html>

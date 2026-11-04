@@ -1,13 +1,20 @@
-const facilitySelect = document.getElementById('facilitySelect');
-const downloadReportBtn = document.getElementById('downloadReportBtn');
-const CHART_TEXT = '#7A8494';
-const CHART_GRID = 'rgba(20,30,45,0.06)';
-const BREAKDOWN_COLORS = ['#2E86C1', '#1F9D6B', '#D9720C', '#D64545', '#8E44AD', '#16A085', '#F1C40F', '#7A8494'];
+const facilitySelect = document.getElementById('facilitySelect') || { value: '', addEventListener: () => {} };
+const downloadReportBtn = document.getElementById('downloadReportBtn') || { addEventListener: () => {} };
+
+function getThemeColors() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    text: isLight ? '#64748B' : '#94A3B8',
+    grid: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+  };
+}
+
+const BREAKDOWN_COLORS = ['#00A3FF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EAB308', '#64748B'];
 
 let healthGauge, domainRadarChart, costDistChart, costTrendChart, rankingChart, complianceChart;
 
 function chartJsReady() {
-  return typeof Chart !== 'undefined';
+  return typeof Chart !== 'undefined' && !window.__chartJsUnavailable;
 }
 
 function qs() {
@@ -25,9 +32,9 @@ function fmtMoney(n) {
 }
 
 function healthColor(score) {
-  if (score >= 80) return '#1F9D6B';
-  if (score >= 60) return '#D9720C';
-  return '#D64545';
+  if (score >= 80) return '#10B981';
+  if (score >= 60) return '#F59E0B';
+  return '#EF4444';
 }
 
 async function loadSummary() {
@@ -42,7 +49,6 @@ async function loadSummary() {
   const health = d.facility_health_score ?? 0;
   document.getElementById('gaugeValue').textContent = `${health}`;
 
-  // Half-donut gauge: value slice + remainder, transparent bottom half via rotation/circumference
   const ctx = document.getElementById('healthGauge');
   if (chartJsReady()) {
     if (healthGauge) healthGauge.destroy();
@@ -70,16 +76,17 @@ async function loadSummary() {
   const radarCtx = document.getElementById('domainRadarChart');
   if (chartJsReady()) {
     if (domainRadarChart) domainRadarChart.destroy();
+    const colors = getThemeColors();
     domainRadarChart = new Chart(radarCtx, {
       type: 'radar',
       data: {
-        labels: ['Energy Efficiency', 'Asset Health', 'Security', 'Occupancy'],
+        labels: ['Energy Efficiency', 'Asset Health', 'Physical Security', 'Space Occupancy'],
         datasets: [{
-          label: 'Domain Score (0-100)',
+          label: 'Domain Index (0-100)',
           data: [d.energy_efficiency_score ?? 0, d.avg_asset_health ?? 0, d.security_score ?? 0, d.occupancy_score ?? 0],
-          backgroundColor: 'rgba(46,134,193,0.18)',
-          borderColor: '#2E86C1',
-          pointBackgroundColor: '#2E86C1',
+          backgroundColor: 'rgba(0,163,255,0.18)',
+          borderColor: '#00A3FF',
+          pointBackgroundColor: '#00A3FF',
           borderWidth: 2,
         }],
       },
@@ -90,10 +97,10 @@ async function loadSummary() {
         scales: {
           r: {
             min: 0, max: 100,
-            angleLines: { color: CHART_GRID },
-            grid: { color: CHART_GRID },
-            pointLabels: { color: CHART_TEXT, font: { size: 11.5 } },
-            ticks: { color: CHART_TEXT, backdropColor: 'transparent', font: { size: 9 } },
+            angleLines: { color: colors.grid },
+            grid: { color: colors.grid },
+            pointLabels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } },
+            ticks: { color: colors.text, backdropColor: 'transparent', font: { size: 9, family: "'IBM Plex Mono', monospace" } },
           },
         },
       },
@@ -110,6 +117,7 @@ async function loadCostDistribution() {
   if (!entries.length) return;
   if (chartJsReady()) {
     if (costDistChart) costDistChart.destroy();
+    const colors = getThemeColors();
     costDistChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -125,7 +133,7 @@ async function loadCostDistribution() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 10.5 }, boxWidth: 10 } },
+          legend: { position: 'bottom', labels: { color: colors.text, font: { size: 10.5, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } },
         },
       },
     });
@@ -139,24 +147,25 @@ async function loadCostTrend() {
   if (!d.labels || !d.labels.length) return;
   if (chartJsReady()) {
     if (costTrendChart) costTrendChart.destroy();
+    const colors = getThemeColors();
     costTrendChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: d.labels,
         datasets: [
-          { label: 'Operational Cost', data: d.operational_cost, borderColor: '#D64545', backgroundColor: 'rgba(214,69,69,0.08)', tension: 0.3, fill: true },
-          { label: 'Budget Allocated', data: d.budget_allocated, borderColor: '#2E86C1', backgroundColor: 'rgba(46,134,193,0.06)', tension: 0.3, borderDash: [5, 4], fill: false },
-          { label: 'Potential Savings', data: d.potential_savings, borderColor: '#1F9D6B', backgroundColor: 'rgba(31,157,107,0.08)', tension: 0.3, fill: true },
+          { label: 'Operational Spend', data: d.operational_cost, borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.12)', tension: 0.3, fill: true },
+          { label: 'Budget Allocated', data: d.budget_allocated, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.06)', tension: 0.3, borderDash: [5, 4], fill: false },
+          { label: 'Potential Savings', data: d.potential_savings, borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.08)', tension: 0.3, fill: true },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 10.5 } } } },
+        plugins: { legend: { labels: { color: colors.text, font: { size: 10.5, family: "'IBM Plex Sans', sans-serif" } } } },
         scales: {
-          x: { ticks: { color: CHART_TEXT, font: { size: 9.5 } }, grid: { display: false } },
-          y: { ticks: { color: CHART_TEXT, font: { size: 9.5 }, callback: v => fmtMoney(v) }, grid: { color: CHART_GRID } },
+          x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
+          y: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" }, callback: v => fmtMoney(v) }, grid: { color: colors.grid } },
         },
       },
     });
@@ -169,21 +178,22 @@ async function loadRanking() {
 
   const body = document.getElementById('rankingTable');
   if (!d.length) {
-    body.innerHTML = '<tr><td colspan="4" class="loading-note">No data.</td></tr>';
+    body.innerHTML = '<tr><td colspan="4" class="loading-note">No data found.</td></tr>';
     return;
   }
   body.innerHTML = d.slice(0, 8).map(r => `
     <tr>
-      <td>${r.facility_id}</td>
-      <td>${r.facility_type}</td>
-      <td>${fmtMoney(r.potential_savings)}</td>
-      <td>${r.avg_roi_pct}%</td>
+      <td style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--accent);">${r.facility_id}</td>
+      <td><span class="f-type">${r.facility_type}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace; font-weight:600;">${fmtMoney(r.potential_savings)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${r.avg_roi_pct}%</td>
     </tr>`).join('');
 
   const top8 = d.slice(0, 8);
   const ctx = document.getElementById('rankingChart');
   if (chartJsReady()) {
     if (rankingChart) rankingChart.destroy();
+    const colors = getThemeColors();
     rankingChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -191,8 +201,8 @@ async function loadRanking() {
         datasets: [{
           label: 'Potential Savings',
           data: top8.map(r => r.potential_savings),
-          backgroundColor: top8.map(r => r.over_budget ? '#D64545' : '#D9720C'),
-          borderRadius: 4,
+          backgroundColor: top8.map(r => r.over_budget ? '#EF4444' : '#00A3FF'),
+          borderRadius: 3,
         }],
       },
       options: {
@@ -201,8 +211,8 @@ async function loadRanking() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { color: CHART_TEXT, font: { size: 9.5 }, callback: v => fmtMoney(v) }, grid: { color: CHART_GRID } },
-          y: { ticks: { color: CHART_TEXT, font: { size: 10.5 } }, grid: { display: false } },
+          x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" }, callback: v => fmtMoney(v) }, grid: { color: colors.grid } },
+          y: { ticks: { color: colors.text, font: { size: 10.5, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
         },
       },
     });
@@ -218,13 +228,14 @@ async function loadBudgetCompliance() {
   const ctx = document.getElementById('complianceChart');
   if (chartJsReady()) {
     if (complianceChart) complianceChart.destroy();
+    const colors = getThemeColors();
     complianceChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: ['Within Budget', 'Over Budget'],
         datasets: [{
           data: [d.periods_within_budget, d.periods_over_budget],
-          backgroundColor: ['#1F9D6B', '#D64545'],
+          backgroundColor: ['#10B981', '#EF4444'],
           borderWidth: 0,
         }],
       },
@@ -232,7 +243,7 @@ async function loadBudgetCompliance() {
         cutout: '62%',
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 11 }, boxWidth: 10 } } },
+        plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } } },
       },
     });
   }
@@ -241,7 +252,7 @@ async function loadBudgetCompliance() {
 async function loadRecommendations() {
   const res = await fetch(`/api/executive/recommendations?${qs()}`);
   const d = await res.json();
-  document.getElementById('recCountTag').textContent = `${d.length} RECOMMENDATIONS`;
+  document.getElementById('recCountTag').textContent = `${d.length} DIRECTIVES`;
   document.getElementById('recommendations').innerHTML = d.map(r => `
     <div class="rec">
       <div class="rec-head">
@@ -249,7 +260,7 @@ async function loadRecommendations() {
         <span class="badge ${r.priority}">${r.priority}</span>
       </div>
       <div class="rec-detail"><strong>${r.agent}:</strong> ${r.detail}</div>
-    </div>`).join('') || '<p class="loading-note">No recommendations right now.</p>';
+    </div>`).join('') || '<p class="loading-note">No active directives at this time.</p>';
 }
 
 function refreshAll() {

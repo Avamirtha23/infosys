@@ -2,130 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Executive Dashboard · Agentic FacilityOps</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Insights · Agentic FacilityOps</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5.0">
+  <script src="{{ url_for('static', filename='js/theme.js') }}?v=5.0"></script>
   <script src="{{ url_for('static', filename='js/chart-loader.js') }}"></script>
 </head>
 <body>
 <div class="layout">
+  <!-- Modern Redesigned Sidebar -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="mark">FO</div>
-      <h1>Agentic FacilityOps</h1>
-      <p>Building Operations Agent Network</p>
+    <div class="sidebar-brand-card">
+      <div class="brand-badge-modern">
+        <div class="brand-hex-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-info-modern">
+          <div class="brand-title-wrap">
+            <span class="brand-title-main">FACILITY</span>
+            <span class="brand-title-accent">OPS</span>
+          </div>
+          <span class="brand-subtext">Autonomous Building Console</span>
+        </div>
+      </div>
+      <div class="brand-status-chip">
+        <span class="status-dot"></span>
+        <span>TELEMETRY ONLINE</span>
+      </div>
     </div>
-    <nav class="nav">
-      <a href="/">Overview</a>
-      <a href="/energy">Energy Agent</a>
-      <a href="/maintenance">Maintenance Agent</a>
-      <a href="/occupancy">Occupancy Agent</a>
-      <a href="/security">Security Agent</a>
-      <a href="/cost">Cost Agent</a>
-      <a href="/executive" class="active">Executive Dashboard</a>
-    </nav>
-    <a href="/logout" class="logout-link">Sign out</a>
-    <div class="sidebar-footer">
-      <span class="status-dot"></span>Facility Intelligence Engine
+
+    <div class="nav-group">
+      <div class="nav-section-title">
+        <span>Diagnostic Consoles</span>
+      </div>
+      <nav class="nav-modern">
+        <a href="/">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </span>
+          <span>Overview</span>
+        </a>
+        <a href="/maintenance">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+          </span>
+          <span>Maintenance CMMS</span>
+          <span class="nav-badge-pill warn">RUL</span>
+        </a>
+        <a href="/energy">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </span>
+          <span>Energy Agent</span>
+          <span class="nav-badge-pill good">LIVE</span>
+        </a>
+        <a href="/occupancy">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <span>Occupancy Agent</span>
+        </a>
+        <a href="/security">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </span>
+          <span>Security Agent</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-section-title">
+        <span>Intelligence &amp; OPEX</span>
+      </div>
+      <nav class="nav-modern">
+        <a href="/cost">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </span>
+          <span>Cost Optimization</span>
+        </a>
+        <a href="/executive" class="active">
+          <span class="nav-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </span>
+          <span>Reports</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Integrated Telemetry Box -->
+    <div class="sidebar-telemetry-box">
+      <div class="telemetry-box-header">
+        <span class="telemetry-box-title">SYSTEM STATUS</span>
+        <span class="telemetry-box-status">6 ONLINE</span>
+      </div>
+      <div class="telemetry-meter-row">
+        <div class="telemetry-meter-bar" style="width: 92%;"></div>
+      </div>
+      <div class="telemetry-stats-row">
+        <span>ASSET HEALTH: <strong>92%</strong></span>
+        <span>STATUS: <strong style="color:var(--good);">NOMINAL</strong></span>
+      </div>
+    </div>
+
+    <!-- Modern Segmented Theme Switcher -->
+    <div class="theme-switch-container">
+      <button type="button" class="theme-switch-btn" data-theme-set="dark" onclick="setFacilityOpsTheme('dark')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Dark
+      </button>
+      <button type="button" class="theme-switch-btn active" data-theme-set="light" onclick="setFacilityOpsTheme('light')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Light
+      </button>
+    </div>
+
+    <!-- User Profile & Sign Out Row -->
+    <div class="sidebar-user-footer">
+      <div class="user-avatar-pill">OP</div>
+      <div class="user-meta">
+        <span class="user-name-label">Facility Ops Lead</span>
+        <span class="user-role-label">System Operator</span>
+      </div>
+      <a href="/logout" class="logout-icon-btn" title="Sign out of console">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </a>
     </div>
   </aside>
 
   <main class="main">
-    <div class="exec-hero">
-      <div class="exec-hero-text">
-        <span class="agent-pill light"><span class="status-dot"></span>Executive View · Cross-Agent Orchestration</span>
-        <h2>🏛️ Facility Intelligence &amp; Executive Dashboard</h2>
-        <p>Aggregated insights from Energy, Maintenance, Occupancy, Security &amp; Cost Optimization agents,
-          blended into one portfolio-wide view.</p>
-        <div class="exec-hero-controls">
-          <select id="facilitySelect" class="select-facility">
-            <option value="">All Facilities</option>
-            {% for f in facilities %}
-            <option value="{{ f.facility_id }}">{{ f.facility_name }}</option>
-            {% endfor %}
-          </select>
-          <button id="downloadReportBtn" class="select-facility exec-report-btn">⬇ Generate Intelligence Report</button>
-        </div>
+    <div class="topbar">
+      <div class="titles">
+        <h2>📊 Reports &amp; Optimization Insights</h2>
+        <p>Data-driven recommendations for zone utilization, energy savings, cost reduction, and facility improvement</p>
       </div>
-      <div class="exec-hero-gauge">
-        <div class="chart-box gauge-box"><canvas id="healthGauge"></canvas></div>
-        <div class="gauge-center">
-          <div class="gauge-value" id="gaugeValue">&mdash;</div>
-          <div class="gauge-label">Facility Health</div>
-        </div>
+      <div class="topbar-controls">
+        <span class="agent-pill"><span class="status-dot"></span>Analysis Engine Active</span>
       </div>
     </div>
 
+    <!-- KPI Summary -->
     <div class="kpi-strip">
-      <div class="kpi cool"><div class="label">Cost Reduction</div><div class="value" id="kpiCostReduction">&mdash;</div></div>
-      <div class="kpi good"><div class="label">ROI Generated</div><div class="value" id="kpiRoi">&mdash;</div></div>
-      <div class="kpi warn"><div class="label">Potential Savings</div><div class="value" id="kpiSavings">&mdash;</div></div>
-      <div class="kpi" style="border-left-color:#8B7CD6;"><div class="label">Optimizations Identified</div><div class="value" id="kpiOptimizations">&mdash;</div></div>
+      <div class="kpi good">
+        <div class="label">Estimated Annual Savings <span class="kpi-badge-delta good">PROJECTED</span></div>
+        <div class="value" id="kpiTotalSavings">&mdash;</div>
+      </div>
+      <div class="kpi cool">
+        <div class="label">Energy Reduction Potential <span class="kpi-badge-delta cool">kWh</span></div>
+        <div class="value" id="kpiEnergyReduction">&mdash;</div>
+      </div>
+      <div class="kpi warn">
+        <div class="label">Zones Needing Attention <span class="kpi-badge-delta warn">ALERT</span></div>
+        <div class="value" id="kpiZonesAlert">&mdash;</div>
+      </div>
+      <div class="kpi" style="border-left-color:var(--indigo);">
+        <div class="label">Active Recommendations <span class="kpi-badge-delta" style="background:rgba(124,58,237,0.15);color:var(--indigo);">ACTIONS</span></div>
+        <div class="value" id="kpiActiveRecs">&mdash;</div>
+      </div>
     </div>
 
+    <!-- Row 1: Zone Utilization vs Energy Consumption & Cost by Zone -->
     <div class="grid grid-2">
       <div class="panel">
         <div class="panel-header">
-          <h3>Cross-Agent Domain Scores</h3>
-          <span class="tag">ENERGY · ASSETS · SECURITY · OCCUPANCY</span>
+          <h3>Zone-wise Energy Consumption</h3>
+          <span class="tag">OPTIMIZATION TARGET</span>
         </div>
-        <div class="chart-box chart-box-lg"><canvas id="domainRadarChart"></canvas></div>
+        <div class="chart-box chart-box-lg"><canvas id="zoneEnergyChart"></canvas></div>
       </div>
       <div class="panel">
         <div class="panel-header">
-          <h3>Cost Distribution</h3>
-          <span class="tag">PORTFOLIO · BY CATEGORY</span>
+          <h3>Zone Occupancy vs Capacity</h3>
+          <span class="tag">UTILIZATION ANALYSIS</span>
         </div>
-        <div class="chart-box chart-box-lg"><canvas id="costDistChart"></canvas></div>
+        <div class="chart-box chart-box-lg"><canvas id="zoneOccupancyChart"></canvas></div>
       </div>
     </div>
 
+    <!-- Row 2: Cost Savings Opportunity & Monthly Trend -->
     <div class="grid grid-2" style="margin-top:18px;">
       <div class="panel">
         <div class="panel-header">
-          <h3>12-Month Cost vs. Budget Trend</h3>
-          <span class="tag">PORTFOLIO-WIDE</span>
+          <h3>Monthly Cost vs Savings Trend</h3>
+          <span class="tag">12-MONTH VIEW</span>
         </div>
-        <div class="chart-box chart-box-lg"><canvas id="costTrendChart"></canvas></div>
+        <div class="chart-box chart-box-lg"><canvas id="costSavingsTrend"></canvas></div>
       </div>
       <div class="panel">
         <div class="panel-header">
-          <h3>Top Facilities by Savings Opportunity</h3>
-          <span class="tag">TOP 8</span>
+          <h3>Cost Breakdown by Category</h3>
+          <span class="tag">SPEND ALLOCATION</span>
         </div>
-        <div class="chart-box chart-box-lg"><canvas id="rankingChart"></canvas></div>
+        <div class="chart-box chart-box-lg"><canvas id="costBreakdownChart"></canvas></div>
       </div>
     </div>
 
-    <div class="grid grid-2" style="margin-top:18px;">
-      <div class="panel">
-        <div class="panel-header">
-          <h3>Budget Compliance</h3>
-          <span class="tag" id="complianceTag">LAST 12 MONTHS</span>
-        </div>
-        <div class="chart-box"><canvas id="complianceChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">
-          <h3>Facilities Needing Attention</h3>
-          <span class="tag">TOP SAVINGS OPPORTUNITIES</span>
-        </div>
-        <table>
-          <thead><tr><th>Facility</th><th>Type</th><th>Potential Savings</th><th>ROI</th></tr></thead>
-          <tbody id="rankingTable"><tr><td colspan="4" class="loading-note">Loading&hellip;</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-
+    <!-- Row 3: Actionable Recommendations -->
     <div class="panel" style="margin-top:18px;">
       <div class="panel-header">
-        <h3>Consolidated Recommendations</h3>
-        <span class="tag" id="recCountTag">ALL AGENTS</span>
+        <h3>Optimization Recommendations</h3>
+        <span class="tag" id="recCountTag">ACTIONABLE INSIGHTS</span>
       </div>
-      <div id="recommendations"><p class="loading-note">Loading&hellip;</p></div>
+      <div id="recommendations"><p class="loading-note">Generating recommendations from data analysis&hellip;</p></div>
+    </div>
+
+    <!-- Row 4: Zone Optimization Details Table -->
+    <div class="panel" style="margin-top:18px;">
+      <div class="panel-header">
+        <h3>Zone-Level Optimization Report</h3>
+        <span class="tag">DETAILED BREAKDOWN</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Zone</th>
+            <th>Avg Occupancy</th>
+            <th>Energy (kWh)</th>
+            <th>Cost (₹)</th>
+            <th>Savings Potential</th>
+            <th>Suggestion</th>
+          </tr>
+        </thead>
+        <tbody id="zoneReportTable">
+          <tr><td colspan="6" class="loading-note">Loading zone analysis&hellip;</td></tr>
+        </tbody>
+      </table>
     </div>
   </main>
 </div>
 
-<script>loadDashboardScriptAfterChart("{{ url_for('static', filename='js/executive_dashboard.js') }}");</script>
+<script>loadDashboardScriptAfterChart("{{ url_for('static', filename='js/reports_dashboard.js') }}");</script>
 </body>
 </html>

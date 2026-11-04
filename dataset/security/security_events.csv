@@ -1,0 +1,121 @@
+event_id,timestamp,facility_id,zone_id,zone_name,access_point,user_id,event_type,access_result,reason,after_hours,is_suspicious,severity,data_source
+SEC0117,2026-09-01 10:09:00,FAC001,Z01,Main Entrance,DOOR-01,U022,door_forced,DENIED,forced_entry_sensor,False,True,HIGH,SIMULATED_SAMPLE
+SEC0100,2026-09-01 10:31:00,FAC001,Z05,Laboratory,DOOR-05,U004,door_held_open,REVIEW,door_open_too_long,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0050,2026-09-01 10:49:00,FAC001,Z06,Store Room,DOOR-06,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0102,2026-09-02 06:18:00,FAC001,Z05,Laboratory,DOOR-05,U015,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0020,2026-09-02 07:58:00,FAC001,Z02,Office Floor,DOOR-02,U009,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0044,2026-09-02 09:56:00,FAC001,Z03,Server Room,DOOR-03,U030,access_attempt,DENIED,expired_badge,False,True,HIGH,SIMULATED_SAMPLE
+SEC0052,2026-09-02 15:14:00,FAC001,Z02,Office Floor,DOOR-02,U025,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0046,2026-09-02 15:20:00,FAC001,Z02,Office Floor,DOOR-02,U028,door_held_open,REVIEW,door_open_too_long,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0112,2026-09-03 00:12:00,FAC001,Z01,Main Entrance,DOOR-01,U026,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0095,2026-09-03 22:09:00,FAC001,Z02,Office Floor,DOOR-02,U028,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0001,2026-09-03 23:15:00,FAC001,Z05,Laboratory,DOOR-05,U027,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0032,2026-09-04 03:10:00,FAC001,Z04,Electrical Room,DOOR-04,U013,access_attempt,DENIED,invalid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0029,2026-09-04 04:24:00,FAC001,Z03,Server Room,DOOR-03,U007,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0076,2026-09-04 08:12:00,FAC001,Z03,Server Room,DOOR-03,U027,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0068,2026-09-04 10:48:00,FAC001,Z02,Office Floor,DOOR-02,U005,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0043,2026-09-04 12:34:00,FAC001,Z02,Office Floor,DOOR-02,U012,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0063,2026-09-04 13:35:00,FAC001,Z03,Server Room,DOOR-03,U019,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0094,2026-09-04 19:18:00,FAC001,Z05,Laboratory,DOOR-05,U013,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0054,2026-09-05 05:54:00,FAC001,Z01,Main Entrance,DOOR-01,U016,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0107,2026-09-05 09:17:00,FAC001,Z04,Electrical Room,DOOR-04,U028,access_attempt,DENIED,invalid_credential,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0041,2026-09-05 11:58:00,FAC001,Z01,Main Entrance,DOOR-01,U023,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0109,2026-09-05 13:58:00,FAC001,Z01,Main Entrance,DOOR-01,U002,access_attempt,DENIED,expired_badge,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0110,2026-09-05 23:33:00,FAC001,Z01,Main Entrance,DOOR-01,U025,access_attempt,DENIED,invalid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0035,2026-09-06 09:49:00,FAC001,Z03,Server Room,DOOR-03,U001,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0074,2026-09-06 17:40:00,FAC001,Z06,Store Room,DOOR-06,U012,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0004,2026-09-06 18:26:00,FAC001,Z06,Store Room,DOOR-06,U026,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0015,2026-09-07 06:56:00,FAC001,Z03,Server Room,DOOR-03,U015,visitor_checkin,GRANTED,visitor_registered,True,True,HIGH,SIMULATED_SAMPLE
+SEC0002,2026-09-07 08:03:00,FAC001,Z01,Main Entrance,DOOR-01,U024,door_held_open,REVIEW,door_open_too_long,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0012,2026-09-08 02:22:00,FAC001,Z04,Electrical Room,DOOR-04,U026,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0064,2026-09-08 06:30:00,FAC001,Z05,Laboratory,DOOR-05,U012,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0083,2026-09-08 08:31:00,FAC001,Z02,Office Floor,DOOR-02,U029,door_held_open,REVIEW,door_open_too_long,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0108,2026-09-08 12:23:00,FAC001,Z03,Server Room,DOOR-03,U007,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0067,2026-09-08 17:26:00,FAC001,Z06,Store Room,DOOR-06,U019,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0028,2026-09-09 04:44:00,FAC001,Z05,Laboratory,DOOR-05,U014,access_attempt,DENIED,invalid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0101,2026-09-09 10:05:00,FAC001,Z06,Store Room,DOOR-06,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0006,2026-09-09 14:16:00,FAC001,Z04,Electrical Room,DOOR-04,U011,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0042,2026-09-09 17:29:00,FAC001,Z02,Office Floor,DOOR-02,U008,door_forced,DENIED,forced_entry_sensor,False,True,HIGH,SIMULATED_SAMPLE
+SEC0034,2026-09-11 04:30:00,FAC001,Z05,Laboratory,DOOR-05,U018,door_forced,DENIED,forced_entry_sensor,True,True,HIGH,SIMULATED_SAMPLE
+SEC0023,2026-09-11 07:41:00,FAC001,Z01,Main Entrance,DOOR-01,U023,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0036,2026-09-11 16:44:00,FAC001,Z03,Server Room,DOOR-03,U003,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0019,2026-09-11 17:11:00,FAC001,Z03,Server Room,DOOR-03,U013,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0099,2026-09-12 02:45:00,FAC001,Z05,Laboratory,DOOR-05,U012,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0008,2026-09-12 05:00:00,FAC001,Z03,Server Room,DOOR-03,U005,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0027,2026-09-12 06:42:00,FAC001,Z06,Store Room,DOOR-06,U009,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0081,2026-09-12 20:15:00,FAC001,Z03,Server Room,DOOR-03,U008,access_attempt,DENIED,unauthorized_zone,True,True,HIGH,SIMULATED_SAMPLE
+SEC0014,2026-09-12 21:59:00,FAC001,Z05,Laboratory,DOOR-05,U025,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0105,2026-09-13 00:28:00,FAC001,Z06,Store Room,DOOR-06,U009,visitor_checkin,GRANTED,visitor_registered,True,False,LOW,SIMULATED_SAMPLE
+SEC0058,2026-09-13 05:15:00,FAC001,Z02,Office Floor,DOOR-02,U029,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0022,2026-09-13 13:36:00,FAC001,Z03,Server Room,DOOR-03,U006,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0118,2026-09-13 15:19:00,FAC001,Z02,Office Floor,DOOR-02,U006,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0075,2026-09-13 18:42:00,FAC001,Z06,Store Room,DOOR-06,U002,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0060,2026-09-13 20:45:00,FAC001,Z01,Main Entrance,DOOR-01,U029,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0103,2026-09-14 05:32:00,FAC001,Z02,Office Floor,DOOR-02,U014,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0021,2026-09-14 07:42:00,FAC001,Z04,Electrical Room,DOOR-04,U025,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0047,2026-09-14 08:16:00,FAC001,Z01,Main Entrance,DOOR-01,U028,door_forced,DENIED,forced_entry_sensor,False,True,HIGH,SIMULATED_SAMPLE
+SEC0040,2026-09-14 11:00:00,FAC001,Z04,Electrical Room,DOOR-04,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0007,2026-09-14 15:53:00,FAC001,Z06,Store Room,DOOR-06,U007,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0005,2026-09-14 19:19:00,FAC001,Z02,Office Floor,DOOR-02,U002,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0113,2026-09-14 23:27:00,FAC001,Z02,Office Floor,DOOR-02,U016,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0062,2026-09-15 07:30:00,FAC001,Z04,Electrical Room,DOOR-04,U025,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0018,2026-09-15 10:11:00,FAC001,Z04,Electrical Room,DOOR-04,U010,access_attempt,DENIED,unauthorized_zone,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0039,2026-09-15 11:54:00,FAC001,Z06,Store Room,DOOR-06,U026,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0011,2026-09-15 13:30:00,FAC001,Z02,Office Floor,DOOR-02,U014,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0092,2026-09-15 13:40:00,FAC001,Z03,Server Room,DOOR-03,U024,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0037,2026-09-15 18:15:00,FAC001,Z02,Office Floor,DOOR-02,U030,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0038,2026-09-15 21:23:00,FAC001,Z04,Electrical Room,DOOR-04,U011,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0085,2026-09-15 23:15:00,FAC001,Z04,Electrical Room,DOOR-04,U017,visitor_checkin,GRANTED,visitor_registered,True,True,HIGH,SIMULATED_SAMPLE
+SEC0031,2026-09-16 01:47:00,FAC001,Z05,Laboratory,DOOR-05,U020,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0033,2026-09-16 02:40:00,FAC001,Z02,Office Floor,DOOR-02,U004,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0025,2026-09-16 03:51:00,FAC001,Z03,Server Room,DOOR-03,U010,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0053,2026-09-16 06:30:00,FAC001,Z04,Electrical Room,DOOR-04,U001,access_attempt,DENIED,invalid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0082,2026-09-16 10:38:00,FAC001,Z03,Server Room,DOOR-03,U012,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0104,2026-09-16 18:11:00,FAC001,Z06,Store Room,DOOR-06,U004,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0093,2026-09-16 19:44:00,FAC001,Z03,Server Room,DOOR-03,U029,access_attempt,DENIED,expired_badge,False,True,HIGH,SIMULATED_SAMPLE
+SEC0049,2026-09-16 20:34:00,FAC001,Z03,Server Room,DOOR-03,U024,access_attempt,DENIED,unauthorized_zone,True,True,HIGH,SIMULATED_SAMPLE
+SEC0091,2026-09-16 21:47:00,FAC001,Z04,Electrical Room,DOOR-04,U018,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0116,2026-09-16 23:14:00,FAC001,Z06,Store Room,DOOR-06,U002,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0080,2026-09-17 08:58:00,FAC001,Z05,Laboratory,DOOR-05,U009,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0070,2026-09-17 12:00:00,FAC001,Z01,Main Entrance,DOOR-01,U006,access_attempt,DENIED,unauthorized_zone,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0114,2026-09-17 17:45:00,FAC001,Z04,Electrical Room,DOOR-04,U005,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0017,2026-09-18 08:29:00,FAC001,Z04,Electrical Room,DOOR-04,U024,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0056,2026-09-18 17:24:00,FAC001,Z01,Main Entrance,DOOR-01,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0071,2026-09-19 00:37:00,FAC001,Z04,Electrical Room,DOOR-04,U010,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0119,2026-09-19 01:12:00,FAC001,Z03,Server Room,DOOR-03,U020,visitor_checkin,GRANTED,visitor_registered,True,True,HIGH,SIMULATED_SAMPLE
+SEC0059,2026-09-19 04:47:00,FAC001,Z04,Electrical Room,DOOR-04,U004,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0065,2026-09-19 09:14:00,FAC001,Z01,Main Entrance,DOOR-01,U015,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0026,2026-09-19 12:10:00,FAC001,Z03,Server Room,DOOR-03,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0045,2026-09-19 22:44:00,FAC001,Z04,Electrical Room,DOOR-04,U029,access_attempt,DENIED,unauthorized_zone,True,True,HIGH,SIMULATED_SAMPLE
+SEC0088,2026-09-19 22:44:00,FAC001,Z05,Laboratory,DOOR-05,U029,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0079,2026-09-20 13:35:00,FAC001,Z05,Laboratory,DOOR-05,U027,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0066,2026-09-20 20:23:00,FAC001,Z04,Electrical Room,DOOR-04,U024,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0096,2026-09-21 10:17:00,FAC001,Z04,Electrical Room,DOOR-04,U010,access_attempt,DENIED,invalid_credential,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0055,2026-09-21 14:54:00,FAC001,Z05,Laboratory,DOOR-05,U025,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0072,2026-09-21 17:06:00,FAC001,Z05,Laboratory,DOOR-05,U002,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0087,2026-09-22 03:15:00,FAC001,Z04,Electrical Room,DOOR-04,U020,access_attempt,DENIED,expired_badge,True,True,HIGH,SIMULATED_SAMPLE
+SEC0013,2026-09-22 07:11:00,FAC001,Z06,Store Room,DOOR-06,U022,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0016,2026-09-22 10:43:00,FAC001,Z04,Electrical Room,DOOR-04,U004,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0024,2026-09-22 19:16:00,FAC001,Z01,Main Entrance,DOOR-01,U005,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0003,2026-09-22 19:35:00,FAC001,Z05,Laboratory,DOOR-05,U014,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0098,2026-09-23 09:59:00,FAC001,Z03,Server Room,DOOR-03,U018,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0057,2026-09-23 11:04:00,FAC001,Z01,Main Entrance,DOOR-01,U016,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0048,2026-09-23 17:59:00,FAC001,Z01,Main Entrance,DOOR-01,U024,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0086,2026-09-24 06:43:00,FAC001,Z04,Electrical Room,DOOR-04,U023,access_attempt,DENIED,unauthorized_zone,True,True,HIGH,SIMULATED_SAMPLE
+SEC0106,2026-09-24 15:09:00,FAC001,Z06,Store Room,DOOR-06,UNKNOWN,access_attempt,GRANTED,valid_credential,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0090,2026-09-25 07:38:00,FAC001,Z06,Store Room,DOOR-06,U019,access_attempt,DENIED,expired_badge,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0030,2026-09-25 13:14:00,FAC001,Z04,Electrical Room,DOOR-04,U027,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0115,2026-09-25 16:35:00,FAC001,Z05,Laboratory,DOOR-05,U009,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0069,2026-09-26 00:45:00,FAC001,Z04,Electrical Room,DOOR-04,U005,access_attempt,DENIED,invalid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0111,2026-09-26 18:34:00,FAC001,Z02,Office Floor,DOOR-02,U029,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE
+SEC0084,2026-09-26 22:01:00,FAC001,Z03,Server Room,DOOR-03,U017,access_attempt,GRANTED,valid_credential,True,True,HIGH,SIMULATED_SAMPLE
+SEC0120,2026-09-27 11:20:00,FAC001,Z04,Electrical Room,DOOR-04,U030,access_attempt,DENIED,unauthorized_zone,False,True,MEDIUM,SIMULATED_SAMPLE
+SEC0073,2026-09-27 13:00:00,FAC001,Z03,Server Room,DOOR-03,U008,access_attempt,GRANTED,valid_credential,False,False,LOW,SIMULATED_SAMPLE
+SEC0051,2026-09-28 01:10:00,FAC001,Z01,Main Entrance,DOOR-01,U019,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0010,2026-09-28 10:59:00,FAC001,Z03,Server Room,DOOR-03,U006,access_attempt,DENIED,expired_badge,False,True,HIGH,SIMULATED_SAMPLE
+SEC0009,2026-09-28 23:13:00,FAC001,Z05,Laboratory,DOOR-05,U011,door_held_open,REVIEW,door_open_too_long,True,True,HIGH,SIMULATED_SAMPLE
+SEC0077,2026-09-29 00:53:00,FAC001,Z02,Office Floor,DOOR-02,U025,visitor_checkin,GRANTED,visitor_registered,True,False,LOW,SIMULATED_SAMPLE
+SEC0089,2026-09-30 01:23:00,FAC001,Z02,Office Floor,DOOR-02,U025,access_attempt,GRANTED,valid_credential,True,False,LOW,SIMULATED_SAMPLE
+SEC0097,2026-09-30 03:08:00,FAC001,Z01,Main Entrance,DOOR-01,U014,door_held_open,REVIEW,door_open_too_long,True,True,HIGH,SIMULATED_SAMPLE
+SEC0061,2026-09-30 06:41:00,FAC001,Z03,Server Room,DOOR-03,U001,visitor_checkin,GRANTED,visitor_registered,True,True,HIGH,SIMULATED_SAMPLE
+SEC0078,2026-09-30 16:17:00,FAC001,Z04,Electrical Room,DOOR-04,U005,visitor_checkin,GRANTED,visitor_registered,False,False,LOW,SIMULATED_SAMPLE

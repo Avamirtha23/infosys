@@ -1,16 +1,18 @@
-const facilitySelect = document.getElementById('facilitySelect');
-const daysSelect = document.getElementById('daysSelect');
+const facilitySelect = document.getElementById('facilitySelect') || { value: '', addEventListener: () => {} };
+const daysSelect = document.getElementById('daysSelect') || { value: '14', addEventListener: () => {} };
 
 let consumptionChart, forecastChart, loadDistChart, anomalyChart, loadCompositionChart;
 
-const CHART_TEXT = '#7A8494';
-const CHART_GRID = 'rgba(20,30,45,0.06)';
+function getThemeColors() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    text: isLight ? '#64748B' : '#94A3B8',
+    grid: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+  };
+}
 
-// If every Chart.js CDN source failed (see chart-loader.js), skip chart
-// rendering gracefully instead of throwing — KPIs, tables and bar-percentage
-// rows above don't depend on Chart.js and should keep working regardless.
 function chartJsReady() {
-  return typeof Chart !== 'undefined';
+  return typeof Chart !== 'undefined' && !window.__chartJsUnavailable;
 }
 
 function qs() {
@@ -34,24 +36,25 @@ async function loadConsumption() {
   const ctx = document.getElementById('consumptionChart');
   if (!chartJsReady()) return;
   if (consumptionChart) consumptionChart.destroy();
+  const colors = getThemeColors();
   consumptionChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: d.labels,
       datasets: [
-        { label: 'Electricity (kWh)', data: d.electricity_kwh, borderColor: '#3FA7D6', backgroundColor: 'rgba(63,167,214,0.12)', tension: 0.3, fill: true, yAxisID: 'y' },
-        { label: 'Water (L)', data: d.water_liters, borderColor: '#8B7CD6', backgroundColor: 'rgba(139,124,214,0.08)', tension: 0.3, fill: true, yAxisID: 'y1' },
+        { label: 'Electricity (kWh)', data: d.electricity_kwh, borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.12)', tension: 0.3, fill: true, yAxisID: 'y' },
+        { label: 'Water (L)', data: d.water_liters, borderColor: '#6366F1', backgroundColor: 'rgba(99,102,241,0.08)', tension: 0.3, fill: true, yAxisID: 'y1' },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { position: 'left', ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y1: { position: 'right', ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { display: false } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { position: 'left', ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y1: { position: 'right', ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
       },
     },
   });
@@ -60,18 +63,19 @@ async function loadConsumption() {
 async function loadLoadDistribution() {
   const res = await fetch(`/api/energy/load-distribution?${qs()}`);
   const d = await res.json();
-  const container = document.getElementById('loadDistribution');
-  if (!d.hvac_pct && d.hvac_pct !== 0) { container.innerHTML = '<p class="loading-note">No data.</p>'; return; }
   const rows = [
-    ['HVAC Systems', d.hvac_pct],
+    ['HVAC', d.hvac_pct],
     ['Lighting', d.lighting_pct],
     ['Equipment', d.equipment_pct],
-    ['Other Systems', d.other_pct],
+    ['Other', d.other_pct],
   ];
-  container.innerHTML = rows.map(([label, pct]) => `
+
+  const colors = getThemeColors();
+  const pal = ['#00A3FF', '#10B981', '#F59E0B', '#8B5CF6'];
+  document.getElementById('loadDistribution').innerHTML = rows.map((r, i) => `
     <div class="bar-row">
-      <div class="bar-label"><span>${label}</span><span>${pct}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
+      <div class="bar-label"><span>${r[0]}</span><span>${r[1]}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${r[1]}%; background:${pal[i]};"></div></div>
     </div>`).join('');
 
   const ctx = document.getElementById('loadDistChart');
@@ -83,7 +87,7 @@ async function loadLoadDistribution() {
       labels: rows.map(r => r[0]),
       datasets: [{
         data: rows.map(r => r[1]),
-        backgroundColor: ['#2E86C1', '#1F9D6B', '#D9720C', '#8E7CC3'],
+        backgroundColor: pal,
         borderWidth: 0,
       }],
     },
@@ -91,7 +95,7 @@ async function loadLoadDistribution() {
       cutout: '62%',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 11 }, boxWidth: 10 } } },
+      plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } } },
     },
   });
 }
@@ -108,39 +112,39 @@ async function loadAnomalies() {
 
   const body = document.getElementById('anomalyTable');
   if (!d.anomalies.length) {
-    body.innerHTML = '<tr><td colspan="4" class="loading-note">No anomalies in this window.</td></tr>';
+    body.innerHTML = '<tr><td colspan="4" class="loading-note">No anomalies detected in selected window.</td></tr>';
   } else {
     body.innerHTML = d.anomalies.map(a => `
       <tr>
-        <td>${a.timestamp}</td>
-        <td>#${a.facility_id}</td>
-        <td>${a.electricity_usage.toFixed(1)}</td>
-        <td><span class="badge ${Math.abs(a.z_score) > 3 ? 'Critical' : 'High'}">${a.z_score}</span></td>
+        <td style="font-family:'IBM Plex Mono',monospace;">${a.timestamp}</td>
+        <td style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--accent);">FAC-0${a.facility_id}</td>
+        <td style="font-family:'IBM Plex Mono',monospace; font-weight:600;">${a.electricity_usage.toFixed(1)} kWh</td>
+        <td><span class="badge ${Math.abs(a.z_score) > 3 ? 'Critical' : 'High'}">Z: ${a.z_score}</span></td>
       </tr>`).join('');
   }
 
-  // Overlay anomaly points on the daily usage series
   const anomalyByDay = {};
   d.anomalies.forEach(a => {
     const day = a.timestamp.slice(0, 10);
     anomalyByDay[day] = Math.max(anomalyByDay[day] || 0, a.electricity_usage);
   });
 
-  const pointColors = ts.labels.map(day => anomalyByDay[day] ? '#D64545' : '#2E86C1');
+  const pointColors = ts.labels.map(day => anomalyByDay[day] ? '#EF4444' : '#00A3FF');
   const pointRadii = ts.labels.map(day => anomalyByDay[day] ? 6 : 2);
 
   const ctx = document.getElementById('anomalyChart');
   if (!chartJsReady()) return;
   if (anomalyChart) anomalyChart.destroy();
+  const colors = getThemeColors();
   anomalyChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: ts.labels,
       datasets: [{
-        label: 'Daily Usage (kWh) — red points are flagged anomalies',
+        label: 'Daily Usage (kWh) — red flags indicate z-score anomalies',
         data: ts.electricity_kwh,
-        borderColor: '#2E86C1',
-        backgroundColor: 'rgba(46,134,193,0.08)',
+        borderColor: '#00A3FF',
+        backgroundColor: 'rgba(0,163,255,0.08)',
         tension: 0.3,
         fill: true,
         pointBackgroundColor: pointColors,
@@ -152,10 +156,10 @@ async function loadAnomalies() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
       },
     },
   });
@@ -167,19 +171,20 @@ async function loadForecast() {
   const ctx = document.getElementById('forecastChart');
   if (!chartJsReady()) return;
   if (forecastChart) forecastChart.destroy();
+  const colors = getThemeColors();
   forecastChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: d.map(r => r.date),
-      datasets: [{ label: 'Forecast kWh', data: d.map(r => r.forecast_kwh), backgroundColor: '#D9720C', borderRadius: 4 }],
+      datasets: [{ label: 'Forecast kWh', data: d.map(r => r.forecast_kwh), backgroundColor: '#00A3FF', borderRadius: 3 }],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { display: false } },
-        y: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
+        y: { ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
       },
     },
   });
@@ -195,7 +200,7 @@ async function loadRecommendations() {
         <span class="badge ${r.priority}">${r.priority}</span>
       </div>
       <div class="rec-detail">${r.detail}</div>
-      ${r.est_savings_pct > 0 ? `<div class="rec-savings">Estimated savings: ${r.est_savings_pct}%</div>` : ''}
+      ${r.est_savings_pct > 0 ? `<div class="rec-savings"><span>⚡ Projected Energy Conservation:</span> <strong>${r.est_savings_pct}%</strong></div>` : ''}
     </div>`).join('');
 }
 
@@ -205,25 +210,26 @@ async function loadLoadComposition() {
   const ctx = document.getElementById('loadCompositionChart');
   if (!chartJsReady() || !d.labels || !d.labels.length) return;
   if (loadCompositionChart) loadCompositionChart.destroy();
+  const colors = getThemeColors();
   loadCompositionChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: d.labels,
       datasets: [
-        { label: 'HVAC', data: d.hvac_pct, borderColor: '#2E86C1', backgroundColor: 'rgba(46,134,193,0.35)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
-        { label: 'Lighting', data: d.lighting_pct, borderColor: '#1F9D6B', backgroundColor: 'rgba(31,157,107,0.35)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
-        { label: 'Equipment', data: d.equipment_pct, borderColor: '#D9720C', backgroundColor: 'rgba(217,114,12,0.35)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
-        { label: 'Other', data: d.other_pct, borderColor: '#8E7CC3', backgroundColor: 'rgba(142,124,195,0.35)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
+        { label: 'HVAC', data: d.hvac_pct, borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.3)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
+        { label: 'Lighting', data: d.lighting_pct, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.3)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
+        { label: 'Equipment', data: d.equipment_pct, borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.3)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
+        { label: 'Other', data: d.other_pct, borderColor: '#8B5CF6', backgroundColor: 'rgba(139,92,246,0.3)', fill: true, stack: 'load', tension: 0.25, pointRadius: 0 },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { stacked: true, max: 100, ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { stacked: true, max: 100, ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
       },
     },
   });

@@ -1,13 +1,18 @@
-const facilitySelect = document.getElementById('facilitySelect');
-const daysSelect = document.getElementById('daysSelect');
+const facilitySelect = document.getElementById('facilitySelect') || { value: '', addEventListener: () => {} };
+const daysSelect = document.getElementById('daysSelect') || { value: '14', addEventListener: () => {} };
 
 let severityDonut, zoneRiskChart, unauthorizedTrendChart, eventTypeChart;
 
-const CHART_TEXT = '#7A8494';
-const CHART_GRID = 'rgba(20,30,45,0.06)';
+function getThemeColors() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    text: isLight ? '#64748B' : '#94A3B8',
+    grid: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+  };
+}
 
 function chartJsReady() {
-  return typeof Chart !== 'undefined';
+  return typeof Chart !== 'undefined' && !window.__chartJsUnavailable;
 }
 
 function qs() {
@@ -17,7 +22,7 @@ function qs() {
 }
 
 function severityColor(sev) {
-  return { Critical: '#D64545', High: '#D9720C', Medium: '#2E86C1', Low: '#1F9D6B' }[sev] || '#2E86C1';
+  return { Critical: '#EF4444', High: '#F59E0B', Medium: '#0EA5E9', Low: '#10B981' }[sev] || '#0EA5E9';
 }
 
 async function loadSummary() {
@@ -43,6 +48,7 @@ async function loadSeverityDistribution() {
   const ctx = document.getElementById('severityDonut');
   if (!chartJsReady()) return;
   if (severityDonut) severityDonut.destroy();
+  const colors = getThemeColors();
   severityDonut = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -57,7 +63,7 @@ async function loadSeverityDistribution() {
       cutout: '62%',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: CHART_TEXT, font: { size: 11 }, boxWidth: 10 } } },
+      plugins: { legend: { position: 'bottom', labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" }, boxWidth: 10 } } },
     },
   });
 }
@@ -65,29 +71,30 @@ async function loadSeverityDistribution() {
 async function loadZoneRisk() {
   const res = await fetch(`/api/security/zone-risk?${qs()}`);
   const d = await res.json();
-  document.getElementById('zoneRiskTag').textContent = `${d.length} ZONES`;
+  document.getElementById('zoneRiskTag').textContent = `${d.length} MONITORED ZONES`;
 
   const ctx = document.getElementById('zoneRiskChart');
   if (!chartJsReady()) return;
   if (zoneRiskChart) zoneRiskChart.destroy();
+  const colors = getThemeColors();
   zoneRiskChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: d.map(z => z.zone),
       datasets: [
-        { label: 'Critical', data: d.map(z => z.critical), backgroundColor: '#D64545', stack: 's' },
-        { label: 'High', data: d.map(z => z.high), backgroundColor: '#D9720C', stack: 's' },
-        { label: 'Other', data: d.map(z => z.events - z.critical - z.high), backgroundColor: '#2E86C1', stack: 's' },
+        { label: 'Critical', data: d.map(z => z.critical), backgroundColor: '#EF4444', stack: 's' },
+        { label: 'High', data: d.map(z => z.high), backgroundColor: '#F59E0B', stack: 's' },
+        { label: 'Other', data: d.map(z => z.events - z.critical - z.high), backgroundColor: '#00A3FF', stack: 's' },
       ],
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { stacked: true, ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { stacked: true, ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { display: false } },
+        x: { stacked: true, ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { stacked: true, ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { display: false } },
       },
     },
   });
@@ -99,15 +106,16 @@ async function loadUnauthorizedTrend() {
   const ctx = document.getElementById('unauthorizedTrendChart');
   if (!chartJsReady()) return;
   if (unauthorizedTrendChart) unauthorizedTrendChart.destroy();
+  const colors = getThemeColors();
   unauthorizedTrendChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: d.labels,
       datasets: [{
-        label: 'Unauthorized-Access Events',
+        label: 'Unauthorized-Access Incidents',
         data: d.counts,
-        borderColor: '#D9720C',
-        backgroundColor: 'rgba(217,114,12,0.12)',
+        borderColor: '#EF4444',
+        backgroundColor: 'rgba(239,68,68,0.12)',
         tension: 0.3,
         fill: true,
       }],
@@ -115,10 +123,10 @@ async function loadUnauthorizedTrend() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 11 } } } },
+      plugins: { legend: { labels: { color: colors.text, font: { size: 11, family: "'IBM Plex Sans', sans-serif" } } } },
       scales: {
-        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { beginAtZero: true, ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
+        x: { ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { beginAtZero: true, ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
       },
     },
   });
@@ -131,6 +139,7 @@ async function loadEventTypes() {
   const ctx = document.getElementById('eventTypeChart');
   if (!chartJsReady() || !entries.length) return;
   if (eventTypeChart) eventTypeChart.destroy();
+  const colors = getThemeColors();
   eventTypeChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -138,8 +147,8 @@ async function loadEventTypes() {
       datasets: [{
         label: 'Events',
         data: entries.map(e => e[1]),
-        backgroundColor: '#2E86C1',
-        borderRadius: 4,
+        backgroundColor: '#00A3FF',
+        borderRadius: 3,
       }],
     },
     options: {
@@ -148,8 +157,8 @@ async function loadEventTypes() {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { beginAtZero: true, ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
-        y: { ticks: { color: CHART_TEXT, font: { size: 9.5 } }, grid: { display: false } },
+        x: { beginAtZero: true, ticks: { color: colors.text, font: { size: 9.5, family: "'IBM Plex Mono', monospace" } }, grid: { color: colors.grid } },
+        y: { ticks: { color: colors.text, font: { size: 10, family: "'IBM Plex Sans', sans-serif" } }, grid: { display: false } },
       },
     },
   });
@@ -160,15 +169,17 @@ async function loadEvents() {
   const d = await res.json();
   const body = document.getElementById('eventTable');
   if (!d.length) {
-    body.innerHTML = '<tr><td colspan="4" class="loading-note">No security events in this window.</td></tr>';
+    body.innerHTML = '<tr><td colspan="6" class="loading-note">No security events logged in this window.</td></tr>';
     return;
   }
   body.innerHTML = d.map(e => `
     <tr>
-      <td>${e.timestamp}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;">${e.timestamp}</td>
+      <td style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--accent);">FAC-0${e.facility_id}</td>
+      <td style="font-weight:600;">${e.zone ?? '—'}</td>
       <td>${e.event_type}</td>
-      <td>${e.zone ?? '—'}</td>
       <td><span class="badge ${e.severity}">${e.severity}</span></td>
+      <td style="color:var(--text-muted); font-size:12px;">${e.details ?? 'Automatic sensor trip'}</td>
     </tr>`).join('');
 }
 
